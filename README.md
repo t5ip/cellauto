@@ -1,1 +1,3 @@
 # cellauto
+
+Cellular automata test
