@@ -1,6 +1,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <iostream>
+#include <stdlib.h>
 
 #define WIDTH 90
 #define RANGE 1
@@ -8,14 +9,21 @@
 
 using namespace std;
 
-// Should be rule 30 
+// Give rule as first parameter. Default is rule 30.
 
-// todo: make it parameterisable from the command line (which rule is used).
+// Todo: make width, range and initial state parameterisable from command line.
 int main(int argc, char **argv)
 {
     int iArray[WIDTH] = {0};
     int iNextArray[WIDTH] = {0};
     int iState[STATEWIDTH] = {0};
+
+    int iRule = 30; 
+
+    if (1 < argc) 
+    {
+        iRule = atoi(argv[1]); 
+    }
 
     iArray[44] = 1;
 
@@ -49,51 +57,7 @@ int main(int argc, char **argv)
                 iVal += iState[j] << j;
             }
             
-            //printf("%d", iVal);
-
-            switch (iVal)
-            {
-                case 0: 
-                {
-                    iNextArray[i] = 0;   
-                    break;
-                }
-                case 1: 
-                {
-                    iNextArray[i] = 1;   
-                    break;
-                }
-                case 2: 
-                {
-                    iNextArray[i] = 1;   
-                    break;
-                }
-                case 3: 
-                {
-                    iNextArray[i] = 1;   
-                    break;
-                }
-                case 4: 
-                {
-                    iNextArray[i] = 1;   
-                    break;
-                }
-                case 5: 
-                {
-                    iNextArray[i] = 0;   
-                    break;
-                }
-                case 6: 
-                {
-                    iNextArray[i] = 0;   
-                    break;
-                }
-                case 7: 
-                {
-                    iNextArray[i] = 0;   
-                    break;
-                }
-            }
+            iNextArray[i] = (iRule >> iVal)&1; 
         }
 
         for (int i=0; i<WIDTH; i++)
@@ -113,5 +77,4 @@ int main(int argc, char **argv)
         cout << endl;
         sleep(1);
     }
-
 }
