@@ -20,6 +20,9 @@ int main(int argc, char **argv)
 
     int iRule = 30; 
 
+    int iHop = 10;
+    int iLoop = 0;
+
     if (1 < argc) 
     {
         iRule = atoi(argv[1]); 
@@ -72,9 +75,13 @@ int main(int argc, char **argv)
             }
         }
 
+        cout << endl;
+        
         memcpy(iArray, iNextArray, WIDTH*sizeof(int));
         
-        cout << endl;
-        sleep(1);
+        if (0 == (iLoop++)%iHop)
+        { 
+            sleep(1);
+        }
     }
 }
