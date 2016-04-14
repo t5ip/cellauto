@@ -20,6 +20,8 @@ int main(int argc, char **argv)
     int iNextArray[WIDTH][HEIGHT]     = {0};
 
     int iRule = 30; 
+    // Start visualization at which step
+    int iStartVisual = 0;
 
     int iHop = 1;
     int iLoop = 0;
@@ -28,15 +30,22 @@ int main(int argc, char **argv)
     {
         iRule = atoi(argv[1]); 
     }
+    
+    if (2 < argc) 
+    {
+        iStartVisual = atoi(argv[2]); 
+    }
 
     // random initial state
     for (int i=0; i<WIDTH; i++)
     {
         for (int ii=0; ii<HEIGHT; ii++)
         {
-            iArray[i][ii] = rand()%2;   
+            //iArray[i][ii] = rand()%9;   
         }
     }
+
+    iArray[44][14] = 1;
 
     while (1)
     {
@@ -61,7 +70,35 @@ int main(int argc, char **argv)
                     }
                 }
 
-                if (1 == iArray[i][ii])
+                /* Coding is 101010101010101010 => positions with 0 mark the bits 
+                   which are checked if cell is dead. Positions with 1 are checked 
+                   if cell is alive. 
+
+                   => Conway's Game of Life is given by: 
+                   1. If 3 neighbours are alive and cell is dead => cell becomes alive 
+                      => put fourth bit with zeroes to 1 => 2^6=64
+                   2. If 2 or 3 neighbours are alive and cell is alive => cell stays alive 
+                      => put third and fourth bit with 1 to value 1 => 2^5+2^7 = 128 + 32 = 160
+                   3. If cell is alive and has less than 2 or more than 3 live neighbours => cell dies 
+                      => every other bit is zero => total rule is 160+64=224 => so this must be the same 
+                      coding as in "Two-Dimensional Cellular Automata" by Packard&Wolfram (1984), whom it is here
+                      respectfully quoted:
+                      "A notorious example of an outer totalistic nine-neighbor square cellular automaton is the 
+                       'Game of Life', with a rule specified by code C=224."
+                */
+                
+                iNextArray[i][ii] = ((1 << (iLive + iArray[i][ii]))&iRule) > 0;   
+                
+                // Conway's Game of Life
+                /*if (0 == iArray[i][ii])
+                {
+                    iNextArray[i][ii] = ((1 << iLive)&iRule) > 0;  
+                    if (3 == iLive)
+                    {
+                        iNextArray[i][ii] = 1;
+                    }
+                }
+                else
                 {
                     if (2 > iLive)
                     {
@@ -75,38 +112,36 @@ int main(int argc, char **argv)
                     {
                         iNextArray[i][ii] = 0;
                     }
-                }
-                else
-                {
-                    if (3 == iLive)
-                    {
-                        iNextArray[i][ii] = 1;
-                    }
-                }
+                }*/
             }   
         }
 
-        for (int ii=0; ii<HEIGHT; ii++)
+        iLoop++;
+
+        if (iLoop > iStartVisual)
         {
-            for (int i=0; i<WIDTH; i++)
+            for (int ii=0; ii<HEIGHT; ii++)
             {
-                if (0 == iArray[i][ii])
+                for (int i=0; i<WIDTH; i++)
                 {
-                    cout << " ";
+                    if (0 == iArray[i][ii])
+                    {
+                        cout << " ";
+                    }
+                    else
+                    {
+                        cout << "O";
+                    }
                 }
-                else
-                {
-                    cout << "O";
-                }
+                cout << endl;
             }
-            cout << endl;
+            
+            if (0 == (iLoop%iHop))
+            { 
+                sleep(1);
+            }
         }
-       
-        memcpy(iArray, iNextArray, WIDTH*HEIGHT*sizeof(int));
         
-        if (0 == (iLoop++)%iHop)
-        { 
-            sleep(1);
-        }
+        memcpy(iArray, iNextArray, WIDTH*HEIGHT*sizeof(int));
     }
 }
