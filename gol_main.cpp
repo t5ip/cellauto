@@ -36,16 +36,21 @@ int main(int argc, char **argv)
         iStartVisual = atoi(argv[2]); 
     }
 
-    // random initial state
-    for (int i=0; i<WIDTH; i++)
+    if (3 < argc) 
     {
-        for (int ii=0; ii<HEIGHT; ii++)
+        // random initial state
+        for (int i=0; i<WIDTH; i++)
         {
-            //iArray[i][ii] = rand()%9;   
+            for (int ii=0; ii<HEIGHT; ii++)
+            {
+                iArray[i][ii] = rand()%9;   
+            }
         }
     }
-
-    iArray[44][14] = 1;
+    else
+    {
+        iArray[44][14] = 1;
+    }
 
     while (1)
     {
