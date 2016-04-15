@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <SDL.h>
 
-#define WIDTH 500
+#define WIDTH 1000
 #define HEIGHT 500
-#define WINDOWSIZE_X 500
+#define WINDOWSIZE_X 1000
 #define WINDOWSIZE_Y 500
 #define RANGE 1
 #define STATEWIDTH RANGE*2 + 1
@@ -19,7 +19,7 @@ SDL_Surface *demo_screen;
 int iRule = 30;
 int iArray[WIDTH] = {0};
 int iNextArray[WIDTH] = {0};
-int iDisplay[HEIGHT][WIDTH] = {0};
+int iDisplay[WIDTH][HEIGHT] = {0};
 int iRow = 0;
 int iStop = 1000000;
 int iIteration = 0;
@@ -88,8 +88,8 @@ int handle()
 
         for (int iD=0; iD<WIDTH; iD++)
         {
-            iDisplay[iRow][iD] = iArray[iD];
-        }        
+            iDisplay[iD][iRow] = iArray[iD];
+        }
 
         iRow = (iRow + 1)%HEIGHT;
 
@@ -133,12 +133,12 @@ void draw()
         cout << endl;*/
             if (0 == iDisplay[x][y])
             {
-                pixel[y+x*rank] = SDL_MapRGBA(demo_screen->format,255,255,255,255);
+                pixel[x+y*rank] = SDL_MapRGBA(demo_screen->format,255,255,255,255);
                 //cout << "O";
             }
             else
             {
-                pixel[y+x*rank] = SDL_MapRGBA(demo_screen->format,0,0,0,255);
+                pixel[x+y*rank] = SDL_MapRGBA(demo_screen->format,0,0,0,255);
                 //cout << " ";
             }
         }
@@ -171,14 +171,14 @@ int main(int argc,char **argv)
     
     if (3 < argc) 
     {
-        for (int i=0; i< HEIGHT; i++)
+        for (int i=0; i < WIDTH; i++)
         {
             iArray[i] = rand()%2;
         }
     }
     else
     {
-        iArray[HEIGHT/2] = 1;
+        iArray[WIDTH/2] = 1;
     }
 
 	SDL_Event ev;
