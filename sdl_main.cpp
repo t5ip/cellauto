@@ -23,6 +23,7 @@ int iDisplay[WIDTH][HEIGHT] = {0};
 int iRow = 0;
 int iStop = 1000000;
 int iIteration = 0;
+int iMetarule = 0;
 
 // Todo: make width, range and initial state parameterisable from command line.
 int handle()
@@ -68,6 +69,12 @@ int handle()
             }
             
             iNextArray[i] = (iRule >> iVal)&1; 
+
+            if (0 < iMetarule)
+            {
+                iRule |= iMetarule;
+                iRule = iRule%256;
+            }
         }
 
        /* for (int i=0; i<WIDTH; i++)
@@ -171,14 +178,30 @@ int main(int argc,char **argv)
     
     if (3 < argc) 
     {
-        for (int i=0; i < WIDTH; i++)
+        if (0 == atoi(argv[3]))
         {
-            iArray[i] = rand()%2;
+            iArray[WIDTH/2] = 1;
+        }
+        else
+        {
+            for (int i=0; i < WIDTH; i++)
+            {
+                iArray[i] = rand()%atoi(argv[3]);
+            }
         }
     }
     else
     {
         iArray[WIDTH/2] = 1;
+    }
+    
+    if (4 < argc) 
+    {
+        iMetarule = atoi(argv[4]);
+    }
+    else
+    {
+        iMetarule = 0;         
     }
 
 	SDL_Event ev;
