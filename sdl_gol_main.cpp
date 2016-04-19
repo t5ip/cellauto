@@ -46,27 +46,35 @@ int handle()
             {
                 for (int jj=ii-RANGE; jj<=ii+RANGE; jj++)
                 {
+
+                    int iCol = j; 
+                    int iRow = jj;
+
                     if (0 > j) 
                     {
-                        j = WIDTH + j;
+                        iCol = WIDTH + j;
                     }    
                     if (0 > jj) 
                     {
-                        jj = HEIGHT + jj;
+                        iRow = HEIGHT + jj;
                     }    
-                    /* if (WIDTH <= j) 
+                    if (WIDTH <= j) 
                     {
-                        j = 0;
+                        iCol = j - WIDTH;
                     }    
                     if (HEIGHT <= jj) 
                     {
-                        jj = 0;
-                    } */  
+                        iRow = jj - HEIGHT;
+                    }
+
+                    //cout << "iCol" << iCol << "iRow" << iRow << endl;  
                 
-                    if ((j>0) && (j<WIDTH) &&
-                        (jj>0) && (jj<HEIGHT) && (j != jj))
+                    if ((iCol>=0) && (iCol<WIDTH) &&
+                        (iRow>=0) && (iRow<HEIGHT) && 
+                        (iCol != i) && 
+                        (iRow != ii))
                     {
-                        if (1 == iArray[j][jj])
+                        if (1 == iArray[iCol][iRow])
                         {
                             iLive++;
                         }           
@@ -91,15 +99,23 @@ int handle()
                    'Game of Life', with a rule specified by code C=224."
             */
             
-            iNextArray[i][ii] = ((1 << (iLive + iArray[i][ii]))&iRule) > 0;   
+            //iNextArray[i][ii] = ((1 << (iLive + iArray[i][ii]))&iRule) > 0;   
+            iNextArray[i][ii] = ((1 << ((2*iLive) + iArray[i][ii]))&iRule) > 0;  
             
             // Conway's Game of Life
             /*if (0 == iArray[i][ii])
             {
-                iNextArray[i][ii] = ((1 << iLive)&iRule) > 0;  
+                // iNextArray[i][ii] = ((1 << (2*(iLive-1)))&iRule) > 0;  
+                int iVal = ((1 << ((2*iLive) + iArray[i][ii]))&iRule) > 0;  
+                
                 if (3 == iLive)
                 {
                     iNextArray[i][ii] = 1;
+                }
+
+                if (iVal != iNextArray[i][ii])
+                {
+                    cout << "err:" << iVal << "    " << iNextArray[i][ii] << endl;
                 }
             }
             else
@@ -108,11 +124,13 @@ int handle()
                 {
                     iNextArray[i][ii] = 0;
                 }
-                else if ((2 == iLive) || (3 == iLive)) 
+                
+                if ((2 == iLive) || (3 == iLive)) 
                 {
                     iNextArray[i][ii] = 1;
                 }
-                else if (3 < iLive)
+                
+                if (3 < iLive)
                 {
                     iNextArray[i][ii] = 0;
                 }
@@ -231,7 +249,18 @@ int main(int argc,char **argv)
             {
                 for (int ii=0; ii < HEIGHT; ii++)
                 {
-                    iArray[i][ii] = rand()%atoi(argv[3]);
+                    int iRand = rand();
+                    int iVal = atoi(argv[3]);
+                    iArray[i][ii] = iRand%iVal;
+
+                    if (0 == iArray[i][ii])
+                    {
+                        iArray[i][ii] = 1;
+                    }
+                    else
+                    {
+                        iArray[i][ii] = 0;
+                    }
                 }
             }
         }
