@@ -2,4 +2,8 @@ Interesting 2d automata rules:
 
 32664
 
+971
+
+32662
+
 
