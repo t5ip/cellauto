@@ -4,22 +4,25 @@
 #include <stdlib.h>
 #include <SDL.h>
 #include <time.h>
+#include <libconfig.h++>
+#include <vector>
 
-#define WIDTH 1000
-#define HEIGHT 500
-#define PIXELSIZE 1
+#define WIDTH 200
+#define HEIGHT 100
+#define PIXELSIZE 5
 #define WINDOWSIZE_X WIDTH*PIXELSIZE
 #define WINDOWSIZE_Y HEIGHT*PIXELSIZE
 #define RANGE 1
 #define STATEWIDTH RANGE*2 + 1
 
 using namespace std;
+using namespace libconfig;
 
 // Give rule as first parameter. Default is rule 30.
 
 SDL_Surface *demo_screen;
 int iRule = 224; // Conway's game of life
-int iArray[WIDTH][HEIGHT] = {0};
+vector< vector<int> > iArray;
 int iNextArray[WIDTH][HEIGHT] = {0};
 int iDisplay[WIDTH][HEIGHT] = {0};
 int iRow = 0;
@@ -95,7 +98,7 @@ int handle()
 
                => Conway's Game of Life is given by: 
                1. If 3 neighbours are alive and cell is dead => cell becomes alive 
-                  => put fourth bit with zeroes to 1 => 2^6=64
+                => put fourth bit with zeroes to 1 => 2^6=64
                2. If 2 or 3 neighbours are alive and cell is alive => cell stays alive 
                   => put third and fourth bit with 1 to value 1 => 2^5+2^7 = 128 + 32 = 160
                3. If cell is alive and has less than 2 or more than 3 live neighbours => cell dies 
@@ -179,8 +182,17 @@ int handle()
         }
     }*/
     
-    memcpy(iArray, iNextArray, WIDTH*HEIGHT*sizeof(int));
-    memcpy(iDisplay, iArray, WIDTH*HEIGHT*sizeof(int));
+    //memcpy(&iArray, iNextArray, WIDTH*HEIGHT*sizeof(int));
+    //memcpy(iDisplay, &iArray, WIDTH*HEIGHT*sizeof(int));
+
+    for (int i=0; i<WIDTH; i++)
+    {
+        for (int j=0; j<HEIGHT; j++)
+        {
+            iArray[i][j] = iNextArray[i][j];
+            iDisplay[i][j] = iArray[i][j];
+        }
+    }
 
     iIteration++;
 }
@@ -257,6 +269,15 @@ void draw()
 
 int main(int argc,char **argv)
 {
+    //Config config;
+    //config.readFile("./cellauto.cfg");
+    
+    iArray.resize(WIDTH);
+    for (int i=0; i<WIDTH; i++)
+    {
+        iArray[i].resize(HEIGHT);
+    }
+
     if (1 < argc) 
     {
         iRule = atoi(argv[1]); 
@@ -344,7 +365,7 @@ int main(int argc,char **argv)
     else
     {
         iMetarule = 0;         
-    }
+    }   
 
 	SDL_Event ev;
 	int active;
