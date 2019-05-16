@@ -11,4 +11,4 @@ sdl_main shows 1d cellular automata with sdl.
 
 sdl_gol_main shows 2d cellular automata with sdl.
 
-You will need libsdl, libsdl-dev, libconfig++
+You will need libsdl, libsdl-dev, libconfig++, libconfig++-dev
