@@ -6,6 +6,7 @@
 #include <time.h>
 #include <libconfig.h++>
 #include <vector>
+#include <argp.h>
 
 #define WIDTH 200
 #define HEIGHT 100
@@ -18,6 +19,62 @@
 using namespace std;
 using namespace libconfig;
 
+/* Stuff for argp */
+const char *argp_program_version = "0.1";
+const char *argp_program_bug_address = 
+    "<pikaviesti.testitili@gmail.com>";
+static char doc[] = 
+    "A program displaying cellular automata.";
+
+static char args_doc[] = "ARG1 ARG2";
+
+static struct argp_option options[] = {
+    {"rule", 'r', "RULE", 0, "The cellular automata rule" },
+    {"stop", 's', "STOP", 0, "Steps before program is stopped"},
+    { 0 }
+};
+
+struct arguments
+{
+    char *args[2]; /*arg1 & arg2*/
+    int m_iRule; 
+    int m_iStop;
+};
+
+/*Parse a single option*/
+static error_t parse_opt(int key, char *arg, struct argp_state *state)
+{
+    struct arguments *arguments = reinterpret_cast<struct arguments*>(state->input);
+    
+    switch (key)
+    {
+        case 'r':
+        {
+            arguments->m_iRule = atoi(arg);
+            break;
+        }
+        case 's':
+        {
+            arguments->m_iStop = atoi(arg);
+            break;
+        }
+        case ARGP_KEY_ARG:
+        {
+            if (2 <= state->arg_num)
+            {
+                /* Too many arguments*/
+                argp_usage(state);
+                break;
+            }
+        }
+        default:
+        {
+            return ARGP_ERR_UNKNOWN;
+        }
+    }
+    return 0;
+}   
+
 // Give rule as first parameter. Default is rule 30.
 
 SDL_Surface *demo_screen;
@@ -28,7 +85,6 @@ int iDisplay[WIDTH][HEIGHT] = {0};
 int iRow = 0;
 int iStop = 1000000;
 int iIteration = 0;
-int iMetarule = 0;
 
 // Todo: make width, range and initial state parameterisable from command line.
 int handle()
@@ -72,8 +128,6 @@ int handle()
                         iRow = jj - HEIGHT;
                     }
 
-                    //cout << "iCol" << iCol << "iRow" << iRow << endl;  
-                
                     if ((iCol>=0) && (iCol<WIDTH) &&
                         (iRow>=0) && (iRow<HEIGHT))
                     {
@@ -102,88 +156,16 @@ int handle()
                2. If 2 or 3 neighbours are alive and cell is alive => cell stays alive 
                   => put third and fourth bit with 1 to value 1 => 2^5+2^7 = 128 + 32 = 160
                3. If cell is alive and has less than 2 or more than 3 live neighbours => cell dies 
-                  => every other bit is zero => total rule is 160+64=224 => so this must be the same 
-                  coding as in "Two-Dimensional Cellular Automata" by Packard&Wolfram (1984), whom it is here
-                  respectfully quoted:
-                  "A notorious example of an outer totalistic nine-neighbor square cellular automaton is the 
-                   'Game of Life', with a rule specified by code C=224."
+                  => every other bit is zero => total rule is 160+64=224
             */
             
             //iNextArray[i][ii] = ((1 << (iLive + iArray[i][ii]))&iRule) > 0;   
             iNextArray[i][ii] = ((1 << ((2*iLive) + iArray[i][ii]))&(iRule)) > 0;
 
-            // Debug:
-            /*if (iNextArray[i][ii] > 0)
-            {
-                int iTmp = (1 << ((2*iLive) + iArray[i][ii]));
-                cout << "Live: " <<  iLive << " Rule: " << iRule << " Array: " << iArray[i][ii];
-                cout << "  (1 << ((2*iLive) + iArray[i][ii]) " << iTmp  << endl;
-            }*/
-            
-            // Conway's Game of Life
-            /*if (0 == iArray[i][ii])
-            {
-                // iNextArray[i][ii] = ((1 << (2*(iLive-1)))&iRule) > 0;  
-                int iVal = ((1 << ((2*iLive) + iArray[i][ii]))&iRule) > 0;  
-                
-                if (3 == iLive)
-                {
-                    iNextArray[i][ii] = 1;
-                }
-
-                if (iVal != iNextArray[i][ii])
-                {
-                    cout << "err:" << iVal << "    " << iNextArray[i][ii] << endl;
-                }
-            }
-            else
-            {
-                if (2 > iLive)
-                {
-                    iNextArray[i][ii] = 0;
-                }
-                
-                if ((2 == iLive) || (3 == iLive)) 
-                {
-                    iNextArray[i][ii] = 1;
-                }
-                
-                if (3 < iLive)
-                {
-                    iNextArray[i][ii] = 0;
-                }
-            }*/
         }   
     }
 
     iLoop++;
-
-    /*if (iLoop > 0)
-    {
-        for (int ii=0; ii<HEIGHT; ii++)
-        {
-            for (int i=0; i<WIDTH; i++)
-            {
-                if (0 == iArray[i][ii])
-                {
-                    cout << " ";
-                }
-                else
-                {
-                    cout << "O";
-                }
-            }
-            cout << endl;
-        }
-        
-        if (0 == (iLoop%iHop))
-        { 
-           sleep(1);
-        }
-    }*/
-    
-    //memcpy(&iArray, iNextArray, WIDTH*HEIGHT*sizeof(int));
-    //memcpy(iDisplay, &iArray, WIDTH*HEIGHT*sizeof(int));
 
     for (int i=0; i<WIDTH; i++)
     {
@@ -267,8 +249,16 @@ void draw()
 	SDL_UnlockSurface(demo_screen);
 }
 
+static struct argp argp = {options, parse_opt, args_doc, doc };
+
 int main(int argc,char **argv)
 {
+    struct arguments arguments; 
+
+    arguments.m_iRule = 224;
+    arguments.m_iStop = -1;
+    argp_parse(&argp, argc, argv, 0, 0, &arguments);
+    printf("rule: %d, stop: %d\n", arguments.m_iRule, arguments.m_iStop);
     //Config config;
     //config.readFile("./cellauto.cfg");
     
@@ -278,7 +268,7 @@ int main(int argc,char **argv)
         iArray[i].resize(HEIGHT);
     }
 
-    if (1 < argc) 
+   /* if (1 < argc) 
     {
         iRule = atoi(argv[1]); 
     }
@@ -294,7 +284,10 @@ int main(int argc,char **argv)
     else
     {
         iStop = -1;
-    }
+    }*/
+
+    iRule = arguments.m_iRule; 
+    iStop = arguments.m_iStop;
     
     if (3 < argc) 
     {
@@ -358,14 +351,6 @@ int main(int argc,char **argv)
         //iArray[101][100]= 1;
         //iArray[101][101]= 1;
     }
-    if (4 < argc) 
-    {
-        iMetarule = atoi(argv[4]);
-    }
-    else
-    {
-        iMetarule = 0;         
-    }   
 
 	SDL_Event ev;
 	int active;
