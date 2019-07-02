@@ -7,6 +7,7 @@
 #include <libconfig.h++>
 #include <vector>
 #include <argp.h>
+#include "grid.h"
 
 #define WIDTH 200
 #define HEIGHT 100
@@ -79,7 +80,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 
 SDL_Surface *demo_screen;
 int iRule = 224; // Conway's game of life
-vector< vector<int> > iArray;
+Grid currentGrid;
 int iNextArray[WIDTH][HEIGHT] = {0};
 int iDisplay[WIDTH][HEIGHT] = {0};
 int iRow = 0;
@@ -131,7 +132,9 @@ int handle()
                     if ((iCol>=0) && (iCol<WIDTH) &&
                         (iRow>=0) && (iRow<HEIGHT))
                     {
-                        if (1 == iArray[iCol][iRow])
+                        currentGrid.setColumnToInspect(iCol);
+                        currentGrid.setRowToInspect(iRow);
+                        if (1 == currentGrid.getValue())
                         {
                             if ((i == iCol) && (ii == iRow))
                             {
@@ -160,19 +163,27 @@ int handle()
             */
             
             //iNextArray[i][ii] = ((1 << (iLive + iArray[i][ii]))&iRule) > 0;   
-            iNextArray[i][ii] = ((1 << ((2*iLive) + iArray[i][ii]))&(iRule)) > 0;
+            currentGrid.setColumnToInspect(i);
+            currentGrid.setRowToInspect(ii);
+            iNextArray[i][ii] = ((1 << ((2*iLive) + currentGrid.getValue()))&(iRule)) > 0;
 
         }   
     }
 
     iLoop++;
 
+    // todo: make iDisplay and iNextArray also grid objects 
+    // use an overloaded =operator to do the copying
     for (int i=0; i<WIDTH; i++)
     {
+        currentGrid.setColumnToEdit(i);        
+        currentGrid.setColumnToInspect(i);        
         for (int j=0; j<HEIGHT; j++)
         {
-            iArray[i][j] = iNextArray[i][j];
-            iDisplay[i][j] = iArray[i][j];
+            currentGrid.setRowToEdit(j);        
+            currentGrid.setRowToInspect(j);        
+            currentGrid.setValue(iNextArray[i][j]);
+            iDisplay[i][j] = currentGrid.getValue();
         }
     }
 
@@ -201,20 +212,6 @@ void draw()
 
         for (int x = 0; x < WIDTH; x++)
         {
-            /* Set pixel */
-       /* for (int i=0; i<WIDTH; i++)
-        {
-            if (0 == iArray[i])
-            {
-                cout << " ";
-            }
-            else
-            {
-                cout << "O";
-            }
-        }
-
-        cout << endl;*/
             if (0 == iDisplay[x][y])
             {
                 for (int i=x_pixel; i<x_pixel + PIXELSIZE; i++)
@@ -259,32 +256,10 @@ int main(int argc,char **argv)
     arguments.m_iStop = -1;
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
     printf("rule: %d, stop: %d\n", arguments.m_iRule, arguments.m_iStop);
-    //Config config;
+    Config config;
     //config.readFile("./cellauto.cfg");
-    
-    iArray.resize(WIDTH);
-    for (int i=0; i<WIDTH; i++)
-    {
-        iArray[i].resize(HEIGHT);
-    }
 
-   /* if (1 < argc) 
-    {
-        iRule = atoi(argv[1]); 
-    }
-    else
-    {
-        iRule = 224;
-    }
-    
-    if (2 < argc) 
-    {
-        iStop = atoi(argv[2]); 
-    }
-    else
-    {
-        iStop = -1;
-    }*/
+    currentGrid.setWidthAndHeight(WIDTH, HEIGHT);
 
     iRule = arguments.m_iRule; 
     iStop = arguments.m_iStop;
@@ -293,7 +268,9 @@ int main(int argc,char **argv)
     {
         if (0 == atoi(argv[3]))
         {
-            iArray[WIDTH/2][HEIGHT/2] = 1;
+            currentGrid.setColumnToEdit(WIDTH/2);
+            currentGrid.setRowToEdit(HEIGHT/2);
+            currentGrid.setValue(1);
         }
         else
         {
@@ -303,20 +280,15 @@ int main(int argc,char **argv)
             
             for (int i=0; i < WIDTH; i++)
             {
+                currentGrid.setColumnToEdit(i);
                 for (int ii=0; ii < HEIGHT; ii++)
                 {
                     int iRand = rand();
                     int iVal = atoi(argv[3]);
-                    iArray[i][ii] = iRand%iVal;
-
-                    if (0 == iArray[i][ii])
-                    {
-                        iArray[i][ii] = 1;
-                    }
-                    else
-                    {
-                        iArray[i][ii] = 0;
-                    }
+                    
+                    currentGrid.setRowToEdit(ii);
+                    currentGrid.setValue(iRand%iVal);
+                    currentGrid.invertValue();
                 }
             }
         }
@@ -328,28 +300,16 @@ int main(int argc,char **argv)
         
         for (int i=0; i < WIDTH; i++)
         {
+            currentGrid.setColumnToEdit(i);
             for (int ii=0; ii < HEIGHT; ii++)
             {
                 int iRand = rand();
                 int iVal = 5;
-                iArray[i][ii] = iRand%iVal;
-
-                if (0 == iArray[i][ii])
-                {
-                    iArray[i][ii] = 1;
-                }
-                else
-                {
-                    iArray[i][ii] = 0;
-                }
+                currentGrid.setRowToEdit(ii);
+                currentGrid.setValue(iRand%iVal);
+                currentGrid.invertValue();
             }
         }
-        //iArray[WIDTH/2][HEIGHT/2]= 1;
-
-        //iArray[100][100]= 1;
-        //iArray[100][101]= 1;
-        //iArray[101][100]= 1;
-        //iArray[101][101]= 1;
     }
 
 	SDL_Event ev;

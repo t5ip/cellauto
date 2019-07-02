@@ -1,21 +1,28 @@
 #ifndef __GRID_H
 #define __GRID_H
 
+#include <vector>
+
+using namespace std;
+
 class Grid 
 {
 public: 
     Grid();
-    void setWidthAndHeigth(int iWidth, int iHeight);
+    void setWidthAndHeight(int iWidth, int iHeight);
     void setColumnToEdit(int iColumn);
     void setRowToEdit(int iRow);
-    void setValueToCell(int iValue);
+    void setValue(int iValue);
     void setColumnToInspect(int iColumn);
     void setRowToInspect(int iRow);
     int  getValue();
+    void invertValue();
 private: 
-    vector< vector<int> > iGrid;
+    vector< vector<int> > grid;
     int iColumnToBeEdited;
     int iRowToBeEdited;
-}
+    int iColumnToBeInspected;
+    int iRowToBeInspected;
+};
 
 #endif
