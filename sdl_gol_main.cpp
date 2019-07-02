@@ -81,8 +81,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 SDL_Surface *demo_screen;
 int iRule = 224; // Conway's game of life
 Grid currentGrid;
-int iNextArray[WIDTH][HEIGHT] = {0};
-int iDisplay[WIDTH][HEIGHT] = {0};
+Grid nextGrid;
+Grid displayGrid;
 int iRow = 0;
 int iStop = 1000000;
 int iIteration = 0;
@@ -165,25 +165,35 @@ int handle()
             //iNextArray[i][ii] = ((1 << (iLive + iArray[i][ii]))&iRule) > 0;   
             currentGrid.setColumnToInspect(i);
             currentGrid.setRowToInspect(ii);
-            iNextArray[i][ii] = ((1 << ((2*iLive) + currentGrid.getValue()))&(iRule)) > 0;
+            
+            nextGrid.setColumnToEdit(i);
+            nextGrid.setRowToEdit(ii);
+
+            nextGrid.setValue( ((1 << ((2*iLive) + currentGrid.getValue()))&(iRule)) > 0);
 
         }   
     }
 
     iLoop++;
 
-    // todo: make iDisplay and iNextArray also grid objects 
-    // use an overloaded =operator to do the copying
+    //todo: use an overloaded =operator to do the copying
     for (int i=0; i<WIDTH; i++)
     {
         currentGrid.setColumnToEdit(i);        
         currentGrid.setColumnToInspect(i);        
+        nextGrid.setColumnToInspect(i);
+        displayGrid.setColumnToEdit(i);
         for (int j=0; j<HEIGHT; j++)
         {
             currentGrid.setRowToEdit(j);        
-            currentGrid.setRowToInspect(j);        
-            currentGrid.setValue(iNextArray[i][j]);
-            iDisplay[i][j] = currentGrid.getValue();
+            currentGrid.setRowToInspect(j); 
+            nextGrid.setRowToInspect(j);
+            
+            currentGrid.setValue(nextGrid.getValue());
+
+            displayGrid.setRowToEdit(j);
+
+            displayGrid.setValue(currentGrid.getValue());
         }
     }
 
@@ -207,12 +217,13 @@ void draw()
 
     for(int y = 0; y < HEIGHT; y++)
 	{
-        
+        displayGrid.setRowToInspect(y);       
         x_pixel = 0;
 
         for (int x = 0; x < WIDTH; x++)
         {
-            if (0 == iDisplay[x][y])
+            displayGrid.setColumnToInspect(x);       
+            if (0 == displayGrid.getValue())
             {
                 for (int i=x_pixel; i<x_pixel + PIXELSIZE; i++)
                 {
@@ -260,6 +271,8 @@ int main(int argc,char **argv)
     //config.readFile("./cellauto.cfg");
 
     currentGrid.setWidthAndHeight(WIDTH, HEIGHT);
+    nextGrid.setWidthAndHeight(WIDTH, HEIGHT);
+    displayGrid.setWidthAndHeight(WIDTH, HEIGHT);
 
     iRule = arguments.m_iRule; 
     iStop = arguments.m_iStop;
