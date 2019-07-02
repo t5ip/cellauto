@@ -26,4 +26,5 @@ Some interesting rules:
 
 cellauto -r 224
 cellauto -r 107
+cellauto -r 1003
 
