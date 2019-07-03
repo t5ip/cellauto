@@ -62,6 +62,8 @@ int CellAutomaton::getValueInCoordinates(int iCol, int iRow)
     return displayGrid.getValue();
 }
 
+// todo: add unit tests for this method (using catch) 
+// Then refactor to manageable smaller methods.
 void CellAutomaton::gotoNextState()
 {
     for (int i=0; i<iWidth; i++)
