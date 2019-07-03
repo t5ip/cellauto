@@ -4,7 +4,7 @@ CC=g++
 INCLUDES=-I"/usr/include/SDL/"
 CFLAGS=$(INCLUDES) -c -g
 LDFLAGS= -lSDL -lm -lconfig++
-SOURCES=sdl_gol_main.cpp grid.cpp
+SOURCES=sdl_gol_main.cpp grid.cpp cellautomaton.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=cellauto
 
