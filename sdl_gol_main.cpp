@@ -175,27 +175,12 @@ int handle()
     }
 
     iLoop++;
-
-    //todo: use an overloaded =operator to do the copying
-    for (int i=0; i<WIDTH; i++)
-    {
-        currentGrid.setColumnToEdit(i);        
-        currentGrid.setColumnToInspect(i);        
-        nextGrid.setColumnToInspect(i);
-        displayGrid.setColumnToEdit(i);
-        for (int j=0; j<HEIGHT; j++)
-        {
-            currentGrid.setRowToEdit(j);        
-            currentGrid.setRowToInspect(j); 
-            nextGrid.setRowToInspect(j);
-            
-            currentGrid.setValue(nextGrid.getValue());
-
-            displayGrid.setRowToEdit(j);
-
-            displayGrid.setValue(currentGrid.getValue());
-        }
-    }
+    
+    // Change state of the grid 
+    // Todo: implement a cellautomaton class which 
+    // composes of the grid. Then call cellautomaton->nextState
+    currentGrid = nextGrid;
+    displayGrid = currentGrid;
 
     iIteration++;
 }

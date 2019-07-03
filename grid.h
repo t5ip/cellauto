@@ -9,7 +9,7 @@ class Grid
 {
 public: 
     Grid();
-    void setWidthAndHeight(int iWidth, int iHeight);
+    void setWidthAndHeight(int iNewWidth, int iNewHeight);
     void setColumnToEdit(int iColumn);
     void setRowToEdit(int iRow);
     void setValue(int iValue);
@@ -17,12 +17,16 @@ public:
     void setRowToInspect(int iRow);
     int  getValue();
     void invertValue();
+    Grid& operator=(const Grid& other);// copy assignment
 private: 
+    void initialize();
     vector< vector<int> > grid;
     int iColumnToBeEdited;
     int iRowToBeEdited;
     int iColumnToBeInspected;
     int iRowToBeInspected;
+    int iWidth;
+    int iHeight;
 };
 
 #endif

@@ -2,14 +2,13 @@
 
 Grid::Grid()
 {
-    iColumnToBeEdited = 0;
-    iRowToBeEdited = 0;
-    iColumnToBeInspected = 0;
-    iRowToBeInspected = 0;
+    initialize();
 }
 
-void Grid::setWidthAndHeight(int iWidth, int iHeight)
+void Grid::setWidthAndHeight(int iNewWidth, int iNewHeight)
 {
+    iWidth = iNewWidth;
+    iHeight = iNewHeight;
     grid.resize(iWidth);
     for (int i=0; i<iWidth; i++)
     {
@@ -57,4 +56,24 @@ void Grid::invertValue()
     {
         grid[iColumnToBeEdited][iRowToBeEdited] = 1;
     }    
+}
+
+Grid& Grid::operator=(const Grid& other) // copy assignment
+{
+    if (this != &other) 
+    { // self-assignment check expected
+        this->grid = other.grid;
+        initialize();
+    }
+    return *this;
+}
+
+void Grid::initialize()
+{
+    iColumnToBeEdited = 0;
+    iRowToBeEdited = 0;
+    iColumnToBeInspected = 0;
+    iRowToBeInspected = 0;
+    iWidth = 0;
+    iHeight = 0;
 }
