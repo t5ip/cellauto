@@ -15,7 +15,6 @@
 #define WINDOWSIZE_X WIDTH*PIXELSIZE
 #define WINDOWSIZE_Y HEIGHT*PIXELSIZE
 #define RANGE 1
-#define STATEWIDTH RANGE*2 + 1
 
 using namespace std;
 using namespace libconfig;
@@ -90,9 +89,6 @@ int iIteration = 0;
 // Todo: make width, range and initial state parameterisable from command line.
 int handle()
 {
-    int iHop = 1;
-    int iLoop = 0;
-
     if ((iIteration > iStop) && (-1 != iStop))
     {
         return 0;
@@ -174,8 +170,6 @@ int handle()
         }   
     }
 
-    iLoop++;
-    
     // Change state of the grid 
     // Todo: implement a cellautomaton class which 
     // composes of the grid. Then call cellautomaton->nextState
