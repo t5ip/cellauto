@@ -15,6 +15,8 @@ public:
     void initializeWithOne();
     int getValueInCoordinates(int iCol, int iRow);
     void gotoNextState();
+    int getWidth();
+    int getHeight();
 private: 
     Grid currentGrid;
     Grid nextGrid;

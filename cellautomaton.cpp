@@ -53,6 +53,10 @@ void CellAutomaton::initializeWithOne()
     currentGrid.setColumnToEdit(iWidth/2);
     currentGrid.setRowToEdit(iHeight/2);
     currentGrid.setValue(1);
+    
+    displayGrid.setColumnToEdit(iWidth/2);
+    displayGrid.setRowToEdit(iHeight/2);
+    displayGrid.setValue(1);
 }
 
 int CellAutomaton::getValueInCoordinates(int iCol, int iRow)
@@ -145,4 +149,14 @@ void CellAutomaton::gotoNextState()
     // Change state of the grid 
     currentGrid = nextGrid;
     displayGrid = currentGrid;
+}
+
+int CellAutomaton::getWidth()
+{
+    return iWidth;
+}
+
+int CellAutomaton::getHeight()
+{
+    return iHeight;
 }
