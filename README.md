@@ -2,11 +2,24 @@
 
 Cellular automata visualization
 
+=== Dependencies === 
+
 You will need to install libsdl, libsdl-dev, libconfig++, libconfig++-dev
+
+== Building ===
 
 Run make 
 
-Then run
+You can change the main function in the Makefile. 
+
+sdl_gol_main shows 2d cellular automata with sdl.
+
+sdl_main shows 1d cellular automata with sdl and takes only one argument: (cellauto [rule])
+
+1D and 2D automata will be merged to the same main program soon. Also the whole program must 
+be refactored as an exercise.
+
+=== Running === 
 
 cellauto -r[rule] -s[steps] 
 
@@ -14,17 +27,24 @@ Example:
 
 cellauto -r 224 
 
-sdl_gol_main shows 2d cellular automata with sdl.
+=== Unit tests === 
 
-You can change the main function in the Makefile. 
+cd tests 
+make 
+./test 
 
-sdl_main shows 1d cellular automata with sdl and takes only one argument: (cellauto [rule])
+This should be integrated to the main folder Makefile so that running make runs 
+unit tests for the files that have changed.
 
-1D and 2D automata will be merged to the same main program soon. Also the whole program must be refactored as an exercise.
-
-Some interesting rules: 
+=== Some interesting rules ===
 
 cellauto -r 224
 cellauto -r 107
 cellauto -r 1003
-cellauto -r 204 -s 50
+cellauto -r 204 -s 50 
+
+Note that -s parameter also makes initializes the automaton with only one cell active. 
+
+Without the -s parameter, the automaton starts from a random state. 
+
+A third argument should be added for the initial state.
